@@ -15,6 +15,7 @@ The program only copies those bytes to the output path, so it needs
 no network and every run writes exactly the same file.
 """
 
+import filecmp
 import os
 import shutil
 
@@ -27,6 +28,10 @@ OUTPUT = os.path.join(OUTPUT_DIR, "entry.png")
 def main() -> None:
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     shutil.copyfile(SOURCE, OUTPUT)
+    # The judge must see exactly the stored front page: fail loudly if
+    # the copy is not byte for byte the image the repository holds.
+    if not filecmp.cmp(SOURCE, OUTPUT, shallow=False):
+        raise SystemExit("copied image differs from image.png")
 
 
 if __name__ == "__main__":
